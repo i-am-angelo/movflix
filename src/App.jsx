@@ -1,3 +1,4 @@
+// Import necessary hooks and components
 import { useState, useEffect } from "react";
 import { useDebounce } from "react-use";
 import Search from "./components/Search";
@@ -5,10 +6,12 @@ import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
 
+// Define API base URL and API key
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
+// Define API options for fetch requests
 const API_OPTIONS = {
   method: "GET",
   headers: {
@@ -18,6 +21,7 @@ const API_OPTIONS = {
 };
 
 const App = () => {
+  // Define state variables
   const [search, setSearch] = useState("");
   const [movies, setMovies] = useState([]);
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -26,6 +30,7 @@ const App = () => {
   const [debounceSearch, setDebounceSearch] = useState("");
   const [results, setResults] = useState("fill");
 
+  // Debounce the search input to avoid excessive API calls
   useDebounce(
     () => {
       setDebounceSearch(search);
@@ -34,6 +39,7 @@ const App = () => {
     [search]
   );
 
+  // Function to fetch movies based on search query or default to popular movies
   const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
@@ -76,6 +82,7 @@ const App = () => {
     }
   };
 
+  // Function to fetch trending movies
   const fetchTrendingMovies = async () => {
     try {
       const movies = await getTrendingMovies();
@@ -86,11 +93,13 @@ const App = () => {
     }
   };
 
+  // Fetch movies based on debounced search input
   useEffect(() => {
     setResults("fill");
     fetchMovies(debounceSearch);
   }, [debounceSearch]);
 
+  // Fetch trending movies on component mount
   useEffect(() => {
     fetchTrendingMovies();
   }, []);
