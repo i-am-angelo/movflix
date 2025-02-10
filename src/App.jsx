@@ -24,6 +24,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [debounceSearch, setDebounceSearch] = useState("");
+  const [results, setResults] = useState("fill");
 
   useDebounce(
     () => {
@@ -60,6 +61,10 @@ const App = () => {
 
       setMovies(data.results || []);
 
+      if (data.results.length === 0) {
+        setResults("none");
+      }
+
       if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
       }
@@ -82,6 +87,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    setResults("fill");
     fetchMovies(debounceSearch);
   }, [debounceSearch]);
 
@@ -127,15 +133,17 @@ const App = () => {
             <Spinner />
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
-          ) : (
+          ) : results === "fill" ? (
             <ul>
               {movies.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}
             </ul>
+          ) : (
+            <p className="text-center text-white text-xl mt-10">
+              Uh oh. No movies are related to that search.
+            </p>
           )}
-
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
         </section>
       </div>
     </main>
